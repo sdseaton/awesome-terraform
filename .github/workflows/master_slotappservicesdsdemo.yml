@@ -15,9 +15,12 @@ jobs:
     steps:
     - uses: actions/checkout@master
 
-    - name: Zip the application files
-      run: zip -r myapp.zip .
-
+    - name: Zip Release
+      uses: TheDoctor0/zip-release@0.4.1
+      with:
+        # Filename for archive
+        filename: 'myapp.zip'
+      
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v1
       with:
