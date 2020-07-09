@@ -8,23 +8,28 @@ on:
     branches:
       - master
 
+env:
+  AZURE_WEBAPP_NAME: slotappservicesdsdemo 
+  AZURE_WEBAPP_PACKAGE_PATH: '.'         
+  PYTHON_VERSION: '3.7'             
+
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
-
+    name: Build and Deploy
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-
-    - name: Zip Release
-      uses: TheDoctor0/zip-release@0.4.1
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v1
       with:
-        # Filename for archive
-        filename: 'myapp.zip'
-      
-    - name: 'Deploy to Azure Web App'
-      uses: azure/webapps-deploy@v1
+        python-version: ${{ env.PYTHON_VERSION }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Deploy Web App using GH Action azure/webapps-deploy
+      uses: azure/webapps-deploy@v2
       with:
-        app-name: 'slotappservicesdsdemo'
-        slot-name: 'production'
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_4b3f75f948a44730a76e54824e07ce3d }}
-        package: './myapp.zip'
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
